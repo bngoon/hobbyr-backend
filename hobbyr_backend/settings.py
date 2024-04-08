@@ -85,10 +85,7 @@ WSGI_APPLICATION = 'hobbyr_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'name',
-        'USER': 'hobbyr_admin',
-        'PASSWORD': 'password',
-        'HOST': 'localhost'
+        'NAME': 'hobbyr_backend',
     }
 }
 
