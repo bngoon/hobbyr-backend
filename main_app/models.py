@@ -1,3 +1,9 @@
 from django.db import models
 
-# Create your models here.
+class UserProfile(models.Model):   
+    user_ID = models.OnetoOneField
+    Username = 
+    profile_pic = 
+    bio = 
+    favs = 
+

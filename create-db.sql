@@ -1,5 +1,5 @@
 CREATE DATABASE hobbyr_backend;
 
-CREATE USER admin WITH PASSWORD 'password';
+CREATE USER hobbyr_admin WITH PASSWORD 'password';
 
-GRANT ALL PRIVILEGES ON DATABASE hobbyr_backend TO admin;
+GRANT ALL PRIVILEGES ON DATABASE hobbyr_backend TO hobbyr_admin;
