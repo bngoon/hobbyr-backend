@@ -148,3 +148,45 @@ class RemoveCommentFromProject(APIView):
         comment = Comment.objects.get(id=comment_id)
         project.comments.remove(comment)
         return Response({'message': f'Comment has been removed from Project {project.project_title}'})
+
+
+class FavoriteList(generics.ListCreateAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+
+
+class AddProjectToFavorite(APIView):
+    def post(self, request, project_id, favorite_id):
+        project = Project.objects.get(id=project_id)
+        favorite = Favorite.objects.get(id=favorite_id)
+        project.favorites.add(favorite)
+        return Response({'message': f'Comment has been added to Project {project.project_title}'})
+
+
+class RemoveProjectFromFavorite(APIView):
+    def post(self, request, project_id, favorite_id):
+        project = Project.objects.get(id=project_id)
+        favorite = Favorite.objects.get(id=favorite_id)
+        project.favorites.remove(favorite)
+        return Response({'message': f'Comment has been removed from Project {project.project_title}'})
+
+
+class FollowerList(generics.ListCreateAPIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+
+
+class AddFollowerToUserProfile(APIView):
+    def post(self, request, userprofile_id, follow_id):
+        UserProfile = UserProfile.objects.get(id=userprofile_id)
+        follow = Follow.objects.get(id=follow_id)
+        project.followers.add(follower)
+        return Response({'message': f'Comment has been added to Project {project.project_title}'})
+
+
+class RemoveFollowerFromUserProfile(APIView):
+    def post(self, request, userpofile_id, follow_id):
+        UserProfile = UserProfile.objects.get(id=userprofile_id)
+        follow = Follow.objects.get(id=follow_id)
+        project.followers.remove(follower)
+        return Response({'message': f'Comment has been removed from Project {project.project_title}'})
