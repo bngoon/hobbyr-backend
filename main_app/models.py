@@ -19,6 +19,9 @@ class UserProfile(models.Model):
     profile_pic = models.CharField(max_length=1000, null=True, blank=True)
     bio = models.TextField(max_length=250)
 
+    def __str__(self):
+        return self.username
+
 
 class Project(models.Model):
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
