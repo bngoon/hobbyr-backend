@@ -148,3 +148,13 @@ class RemoveCommentFromProject(APIView):
         comment = Comment.objects.get(id=comment_id)
         project.comments.remove(comment)
         return Response({'message': f'Comment has been removed from Project {project.project_title}'})
+
+class FollowSerializer(APIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+
+class FavoriteSerializer(APIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+
+
