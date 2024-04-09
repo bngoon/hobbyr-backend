@@ -15,17 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            # Ensure the password is hashed
             password=validated_data['password']
         )
-
-        UserProfile.objects.create(
-            user=user,
-            username=validated_data['username'],
-            profile_pic='',
-            bio=''
-        )
-
         return user
 
 
@@ -47,7 +38,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __str__(self):
-        return UserProfile.username
+        return self.username
 
 
 class FollowSerializer(serializers.ModelSerializer):

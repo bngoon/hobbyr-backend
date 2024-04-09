@@ -25,11 +25,14 @@ class CreateUserView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         user = User.objects.get(username=response.data['username'])
+        userProfile = UserProfile.objects.create(
+            user=user, username=user.username)
         refresh = RefreshToken.for_user(user)
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
-            'user': response.data
+            'user': response.data,
+            'userProfile': UserProfileSerializer(userProfile).data
         })
 
 # User Login
@@ -41,13 +44,19 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        print("username: ", username, "password: ", password)
+
         user = authenticate(username=username, password=password)
+
         if user:
+            userProfile = UserProfile.objects.get(user=user)
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': UserSerializer(user).data
+                'user': UserSerializer(user).data,
+                'userProfile': UserProfileSerializer(userProfile).data
             })
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -59,12 +68,14 @@ class VerifyUserView(APIView):
 
     def get(self, request):
         user = User.objects.get(username=request.user)  # Fetch user profile
+        userProfile = UserProfile.objects.get(user=user)
         refresh = RefreshToken.for_user(
             request.user)  # Generate new refresh token
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
-            'user': UserSerializer(user).data
+            'user': UserSerializer(user).data,
+            'userProfile': UserProfileSerializer(userProfile).data
         })
 
 
