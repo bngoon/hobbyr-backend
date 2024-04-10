@@ -47,8 +47,13 @@ class Follow(models.Model):
 
 
 class Favorite(models.Model):
-    projects = models.ManyToManyField(Project)
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    projects = models.ForeignKey(
+        Project, related_name='favorites', on_delete=models.CASCADE)
+    user_profile = models.ForeignKey(
+        UserProfile, related_name='favorites', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'Favorites: ' + str(self.user_profile) + ' ' + str(self.projects)
 
 
 class Comment(models.Model):

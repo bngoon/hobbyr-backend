@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .serializers import UserSerializer, UserProfileSerializer, ProjectSerializer, CommentSerializer, FollowSerializer, FavoriteSerializer
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -138,37 +138,6 @@ class VerifyUserView(APIView):
         })
 
 
-# class AddCommentToProject(APIView):
-
-#     def post(self, request, project_id, comment_id):
-#         try:
-#             project = Project.objects.get(id=project_id)
-#         except Project.DoesNotExist:
-#             return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         try:
-#             comment = Comment.objects.create(id=comment_id)
-#         except Comment.DoesNotExist:
-#             return Response({'error': 'Comment not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         project.comments.add(comment)
-
-#         return Response({'message': f'Comment has been added to Project {project.project_title}'})
-
-#     def get_queryset(self):
-#         queryset = Comment.objects.all()
-#         return queryset
-
-# class AddCommentToProject(generics.CreateAPIView):
-#     queryset = Comment.objects.all()
-#     serializer_class = CommentSerializer
-
-#     def perform_create(self, serializer):
-#         project_id = self.kwargs.get('project_id')
-#         project = Project.objects.get(id=project_id)
-#         serializer.save(self.request.user, project=project)
-
-
 class UserProfileList(generics.ListCreateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -181,60 +150,6 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserProfileSerializer
     lookup_field = 'id'
     queryset = UserProfile.objects.all()
-
-
-# class AddCommentToProject(APIView):
-#     def post(self, request, project_id, comment_id):
-#         try:
-#             project = Project.objects.get(id=project_id)
-#         except Project.DoesNotExist:
-#             return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         try:
-#             comment = Comment.objects.get(id=comment_id)
-#         except Comment.DoesNotExist:
-#             return Response({'error': 'Comment not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         # Assuming you want to associate the comment with the authenticated user's profile
-#         try:
-#             user_profiles = UserProfile.objects.get(user=request.user)
-#         except UserProfile.DoesNotExist:
-#             return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         project.comments.add(comment)
-
-#         return Response({'message': f'Comment has been added to Project {project.project_title}'})
-
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     return UserProfile.objects.filter(user=user)
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     serializer = self.get_serializer(instance)
-
-    #     projects_not_associated = Project.objects.exclude(
-    #         id__in=instance.projects.all())
-    #     projects_serializer = ProjectSerializer(
-    #         projects_not_associated, many=True)
-
-    # return Response({
-    #     'UserProfile': serializer.data,
-    #     'projects_not_associated': projects_serializer.data
-    # })
-
-    # def perform_update(self, serializer):
-    #     UserProfile = self.get_object()
-    #     if UserProfile.user != self.request.user:
-    #         raise PermissionDenied(
-    #             {"message": "You do not have permission to edit this project."})
-    #     serializer.save()
-
-    # def perform_destroy(self, instance):
-    #     if instance.user != self.request.user:
-    #         raise PermissionDenied(
-    #             {"message": "You do not have permission to delete this project."})
-    #     instance.delete()
 
 
 class ProjectList(generics.ListCreateAPIView):
@@ -261,25 +176,26 @@ class RemoveCommentFromProject(APIView):
         return Response({'message': f'Comment has been removed from Project {project.project_title}'})
 
 
-class FavoriteList(generics.ListCreateAPIView):
+class FavoriteViewSet(viewsets.ModelViewSet):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
-class AddProjectToFavorite(APIView):
-    def post(self, request, project_id, favorite_id):
-        project = Project.objects.get(id=project_id)
-        favorite = Favorite.objects.get(id=favorite_id)
-        project.favorites.add(favorite)
-        return Response({'message': f'Comment has been added to Project {project.project_title}'})
+# class AddProjectToFavorite(APIView):
+#     def post(self, request, project_id, favorite_id):
+#         project = Project.objects.get(id=project_id)
+#         favorite = Favorite.objects.get(id=favorite_id)
+#         project.favorites.add(favorite)
+#         return Response({'message': f'Comment has been added to Project {project.project_title}'})
 
 
-class RemoveProjectFromFavorite(APIView):
-    def post(self, request, project_id, favorite_id):
-        project = Project.objects.get(id=project_id)
-        favorite = Favorite.objects.get(id=favorite_id)
-        project.favorites.remove(favorite)
-        return Response({'message': f'Comment has been removed from Project {project.project_title}'})
+# class RemoveProjectFromFavorite(APIView):
+#     def post(self, request, project_id, favorite_id):
+#         project = Project.objects.get(id=project_id)
+#         favorite = Favorite.objects.get(id=favorite_id)
+#         project.favorites.remove(favorite)
+#         return Response({'message': f'Comment has been removed from Project {project.project_title}'})
 
 
 class FollowerList(generics.ListCreateAPIView):
@@ -287,12 +203,25 @@ class FollowerList(generics.ListCreateAPIView):
     serializer_class = FollowSerializer
 
 
-class AddFollowerToUserProfile(APIView):
-    def post(self, request, userprofile_id, follow_id):
-        UserProfile = UserProfile.objects.get(id=userprofile_id)
-        follow = Follow.objects.get(id=follow_id)
-        project.followers.add(follower)
-        return Response({'message': f'Comment has been added to Project {project.project_title}'})
+class AddFollowerToUserProfile(generics.CreateAPIView):
+    serializer_class = FollowSerializer
+
+    def perform_create(self, serializer):
+        try:
+            userprofile_id = self.kwargs.get('userprofile_id')
+            follower_id = self.kwargs.get('follower_id')
+
+            userprofile = UserProfile.objects.get(id=userprofile_id)
+            follower = UserProfile.objects.get(id=follower_id)
+
+            # Check if the follower is already added
+            if Follow.objects.filter(following=userprofile, followers=follower).exists():
+                return Response({'error': 'Follower already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer.save(following=userprofile, followers=follower)
+
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User Profile with id {} not found'.format(userprofile_id)}, status=status.HTTP_404_NOT_FOUND)
 
 
 class RemoveFollowerFromUserProfile(APIView):
