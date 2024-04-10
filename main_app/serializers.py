@@ -23,10 +23,16 @@ class UserSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = '__all__', "comments"
 
     def __str__(self):
         return Project.project_title
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -51,9 +57,3 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ['user_profile', 'projects']
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['user_profile', 'comment_body', 'projects']

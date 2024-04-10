@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Home, FavoriteList, FollowerList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, RemoveCommentFromProject, AddProjectToFavorite, RemoveProjectFromFavorite, AddFollowerToUserProfile, RemoveFollowerFromUserProfile
+from .views import Home, FavoriteList, FollowerList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, AddProjectToFavorite, RemoveProjectFromFavorite, AddFollowerToUserProfile, RemoveFollowerFromUserProfile
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -18,15 +18,19 @@ urlpatterns = [
     path('profiles/<int:id>/', UserProfileDetail.as_view(), name='profile-detal'),
     # Comment Paths
     path('comments/', CommentList.as_view(), name='comment'),
-    path('projects/<int:project_id>/add_comment/<int:comment_id>/',
+    # add comment
+    path('projects/<int:project_id>/add_comment/',
          AddCommentToProject.as_view(), name='add-comment'),
-    path('projects/<int:project_id>/remove_comment/<int:comment_id>/',
-         RemoveCommentFromProject.as_view(), name='remove-comment'),
+    # remove comment by id
+    path('comments/<int:id>/',
+         CommentDetails.as_view(), name='comment-details'),
 
 
     path('followers/', FollowerList.as_view(), name='followers'),
+
     path('userprofiles/<int:userprofile_id>/add_follower/<int:follower_id>/',
          AddFollowerToUserProfile.as_view(), name='add-follower'),
+
     path('userprofiles/<int:userprofile_id>/remove_follower/<int:follower_id>/',
          RemoveFollowerFromUserProfile.as_view(), name='remove-follower'),
 
@@ -35,13 +39,6 @@ urlpatterns = [
          AddProjectToFavorite.as_view(), name='add-favorite'),
     path('projects/<int:project_id>/remove_favorites/<int:favorite_id>/',
          RemoveProjectFromFavorite.as_view(), name='remove-favorite'),
-
-
-
-
-
-
-
 
 
 ]
