@@ -1,5 +1,9 @@
-from django.urls import path
-from .views import Home, FavoriteList, FollowerList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, AddProjectToFavorite, RemoveProjectFromFavorite, AddFollowerToUserProfile, RemoveFollowerFromUserProfile
+from django.urls import path, include
+from rest_framework import routers
+from .views import Home, FollowerList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, AddFollowerToUserProfile, RemoveFollowerFromUserProfile, FavoriteViewSet
+
+favorite_router = routers.DefaultRouter()
+favorite_router.register(r'favorite', FavoriteViewSet)
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -34,11 +38,13 @@ urlpatterns = [
     path('userprofiles/<int:userprofile_id>/remove_follower/<int:follower_id>/',
          RemoveFollowerFromUserProfile.as_view(), name='remove-follower'),
 
-    path('favorites/', FavoriteList.as_view(), name='favorites'),
-    path('projects/<int:project_id>/add_favorites/<int:favorite_id>/',
-         AddProjectToFavorite.as_view(), name='add-favorite'),
-    path('projects/<int:project_id>/remove_favorites/<int:favorite_id>/',
-         RemoveProjectFromFavorite.as_view(), name='remove-favorite'),
+    # Favorites
+    path('', include(favorite_router.urls)),
+
+    #     path('projects/<int:project_id>/add_favorites/<int:favorite_id>/',
+    #          AddProjectToFavorite.as_view(), name='add-favorite'),
+    #     path('projects/<int:project_id>/remove_favorites/<int:favorite_id>/',
+    #          RemoveProjectFromFavorite.as_view(), name='remove-favorite'),
 
 
 ]

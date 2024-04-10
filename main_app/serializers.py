@@ -56,4 +56,4 @@ class FollowSerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
-        fields = ['user_profile', 'projects']
+        fields = ['user_profile', 'projects',]
