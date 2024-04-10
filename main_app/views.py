@@ -197,36 +197,49 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 #         project.favorites.remove(favorite)
 #         return Response({'message': f'Comment has been removed from Project {project.project_title}'})
 
-
+# Followers views
 class FollowerList(generics.ListCreateAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
 
+# Follow User
 
-class AddFollowerToUserProfile(generics.CreateAPIView):
-    serializer_class = FollowSerializer
 
-    def perform_create(self, serializer):
+class FollowUser(APIView):
+    def post(self, request, userprofile_id):
         try:
-            userprofile_id = self.kwargs.get('userprofile_id')
-            follower_id = self.kwargs.get('follower_id')
-
-            userprofile = UserProfile.objects.get(id=userprofile_id)
-            follower = UserProfile.objects.get(id=follower_id)
-
-            # Check if the follower is already added
-            if Follow.objects.filter(following=userprofile, followers=follower).exists():
-                return Response({'error': 'Follower already exists'}, status=status.HTTP_400_BAD_REQUEST)
-
-            serializer.save(following=userprofile, followers=follower)
-
+            user_to_follow = UserProfile.objects.get(pk=userprofile_id)
+            # Get the UserProfile of the authenticated user
+            user_profile = request.user.userprofile
+            follow_instance = Follow.objects.create(
+                following=user_profile, followers=user_to_follow)
+            return Response({"message": "Successfully followed user", "follow_instance_id": follow_instance.id}, status=status.HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            return Response({'error': 'User Profile with id {} not found'.format(userprofile_id)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User to follow does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class RemoveFollowerFromUserProfile(APIView):
-    def post(self, request, userpofile_id, follow_id):
-        UserProfile = UserProfile.objects.get(id=userprofile_id)
-        follow = Follow.objects.get(id=follow_id)
-        project.followers.remove(follower)
-        return Response({'message': f'Comment has been removed from Project {project.project_title}'})
+class UnfollowUser(APIView):
+    def post(self, request, userprofile_id):
+        try:
+            user_to_unfollow = UserProfile.objects.get(pk=userprofile_id)
+            # Get the UserProfile of the authenticated user
+            user_profile = request.user.userprofile
+            # Removing the follow relationship
+            Follow.objects.filter(following=user_profile,
+                                  followers=user_to_unfollow).delete()
+            return Response({"message": "Successfully unfollowed user"}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "User to unfollow does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class FollowersView(APIView):
+    def get(self, request, userprofile_id):
+        try:
+            user_profile = UserProfile.objects.get(pk=userprofile_id)
+            followers = user_profile.followers.all()
+            follower_user_profiles = [follow.following for follow in followers]
+            serializer = UserProfileSerializer(
+                follower_user_profiles, many=True)
+            return Response(serializer.data)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "User profile does not exist"}, status=status.HTTP_404_NOT_FOUND)
