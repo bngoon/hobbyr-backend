@@ -167,14 +167,24 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     lookup_field = 'id'
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
 
 
 class CommentList(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
 
 
 class RemoveCommentFromProject(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
     def post(self, request, project_id, comment_id):
         project = Project.objects.get(id=project_id)
         comment = Comment.objects.get(id=comment_id)
@@ -205,13 +215,21 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 
 # Followers views
 class FollowerList(generics.ListCreateAPIView):
+
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
 
 # Follow User
 
 
 class FollowUser(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
     def post(self, request, userprofile_id):
         try:
             user_to_follow = UserProfile.objects.get(pk=userprofile_id)
@@ -225,6 +243,10 @@ class FollowUser(APIView):
 
 
 class UnfollowUser(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
     def post(self, request, userprofile_id):
         try:
             user_to_unfollow = UserProfile.objects.get(pk=userprofile_id)
@@ -239,6 +261,10 @@ class UnfollowUser(APIView):
 
 
 class FollowersView(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
     def get(self, request, userprofile_id):
         try:
             user_profile = UserProfile.objects.get(pk=userprofile_id)
