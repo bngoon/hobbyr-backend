@@ -63,7 +63,8 @@ class Favorite(models.Model):
 class Comment(models.Model):
     projects = models.ForeignKey(
         Project, related_name="comments", on_delete=models.CASCADE)
-    user_profiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user_profiles = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE)
     comment_body = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
