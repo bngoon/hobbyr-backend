@@ -21,9 +21,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    project_img = serializers.ImageField(required=False)
+
     class Meta:
         model = Project
-        fields = '__all__', "comments"
+        fields = '__all__'
 
     def __str__(self):
         return Project.project_title
