@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework import routers
+
 from .views import Home, ProjectTypeList, ProjectByProfile, FollowerList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView
+
 
 favorite_router = routers.DefaultRouter()
 favorite_router.register(r'favorite', FavoriteViewSet)
@@ -26,6 +28,14 @@ urlpatterns = [
     # remove comment by id
     path('comments/<int:id>/',
          CommentDetails.as_view(), name='comment-details'),
+
+
+
+    path('projects/<int:project_id>/comments/',
+         CommentsListView.as_view(), name='project_comments'),
+
+
+
 
 
     path('followers/', FollowerList.as_view(), name='followers'),
