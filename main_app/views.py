@@ -17,6 +17,33 @@ class Home(APIView):
         return Response(content)
 
 
+class ProjectTypeList(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    def get_queryset(self):
+        project_type=self.kwargs['project_type']
+
+        
+        return Project.objects.filter(project_type=project_type)
+
+class ProjectByProfile(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    def get_queryset(self):
+        user_profile_id=self.kwargs['user_profile_id']
+
+        
+        return Project.objects.filter(user_profile_id=user_profile_id)
+
+        
 class AddCommentToProject(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
