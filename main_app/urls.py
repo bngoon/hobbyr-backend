@@ -21,8 +21,11 @@ urlpatterns = [
     # Comment Paths
     path('comments/', CommentList.as_view(), name='comment'),
     # add comment
+
     path('projects/<int:project_id>/add_comment/',
          AddCommentToProject.as_view(), name='add-comment'),
+
+
     # remove comment by id
     path('comments/<int:id>/',
          CommentDetails.as_view(), name='comment-details'),

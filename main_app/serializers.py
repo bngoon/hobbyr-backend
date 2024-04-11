@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from datetime import datetime
 from .models import UserProfile, Project, Follow, Favorite, Comment
 from django.contrib.auth.models import User
 
@@ -31,22 +32,36 @@ class ProjectSerializer(serializers.ModelSerializer):
         return Project.project_title
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = '__all__'
-
-
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(
-        read_only=True)  # Make the user field read-only
+    # Fetch username from user relation
+    username = serializers.CharField(
+        source='user.username', read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        fields = ['id', 'username']
 
-    def __str__(self):
-        return self.username
+
+class CommentSerializer(serializers.ModelSerializer):
+    user_profiles = UserProfileSerializer(
+        read_only=True)
+    # Nested UserProfileSerializer
+    formatted_created_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        # Include the nested UserProfileSerializer field
+        fields = ['id', 'comment_body',
+                  'user_profiles', 'formatted_created_at']
+
+    def create(self, validated_data):
+        # This is called when a new Comment instance is created via the API
+        # Here you need to handle creation of comments correctly if user_profile is not included in the incoming request
+        return Comment.objects.create(**validated_data)
+
+    def get_formatted_created_at(self, obj):
+        # Format as 'Month day, Year, HH:MM AM/PM'
+        return obj.created_at.strftime('%B %d, %Y, %I:%M %p')
 
 
 class FollowSerializer(serializers.ModelSerializer):
