@@ -23,13 +23,17 @@ class UserProfile(models.Model):
         return self.username
 
 
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
+
+
 class Project(models.Model):
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     project_title = models.CharField(max_length=250)
     project_type = models.CharField(
         choices=CHOICES, default=CHOICES[0][0], max_length=1)
     project_img = models.ImageField(
-        upload_to='projects/', null=True, blank=True)
+        upload_to=upload_to, null=True, blank=True)
     body = models.TextField(max_length=1000)
     link = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

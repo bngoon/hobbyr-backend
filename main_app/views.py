@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import UserProfile, Project, Comment, Favorite, Follow
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class Home(APIView):
@@ -80,6 +81,7 @@ class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -155,6 +157,10 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
