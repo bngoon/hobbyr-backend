@@ -3,6 +3,7 @@ from .serializers import UserSerializer, UserProfileSerializer, ProjectSerialize
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
@@ -44,20 +45,33 @@ class ProjectByProfile(generics.ListCreateAPIView):
         return Project.objects.filter(user_profile_id=user_profile_id)
 
         
+
 class AddCommentToProject(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
-    def add_comment_to_project(request, project_id):
-        if request.method == 'POST':
-            project = Project.objects.get(pk=project_id)
-            user_profiles = request.user.userprofile
-            comment_body = request.POST.get('comment_body')
-            comment = Comment.objects.create(
-                project=project, user_profile=user_profiles, comment_body=comment_body)
-            return Response({'comment_id': comment.id, 'user_profiles': user_profiles})
-        else:
-            return Response({'error': 'POST request required'}, status=400)
+    def post(self, request, *args, **kwargs):
+        project_id = self.kwargs.get('project_id')
+        try:
+            project = Project.objects.get(
+                pk=project_id)  # Correct variable name
+        except Project.DoesNotExist:
+            raise NotFound('Project not found')
+
+        user_profiles = request.user.userprofile  # Get the user profile instance
+        comment_body = request.data.get('comment_body')
+
+        if not comment_body:
+            return Response({'error': 'Comment body is required'}, status=400)
+
+        comment = Comment.objects.create(
+            projects=project,  # Correct field name according to the model
+            user_profiles=user_profiles,  # Correct field name according to the model
+            comment_body=comment_body
+        )
+        # Serialize user profile info
+        return Response({'comment_id': comment.id, 'user_profiles': user_profiles.username})
 
 
 class CommentsListView(generics.ListAPIView):

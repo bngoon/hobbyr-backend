@@ -5,9 +5,7 @@ CHOICES = (
     ('T', 'Tech'),
     ('C', 'Carpentry'),
     ('R', 'Renovations'),
-    ('P', 'Plumbing'),
     ('A', 'Art & Design'),
-    ('L', 'Landscaping'),
     ('J', 'Jewelery'),
     ('H', 'Homegoods')
 )
