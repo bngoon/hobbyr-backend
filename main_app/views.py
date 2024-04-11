@@ -24,13 +24,24 @@ class AddCommentToProject(generics.CreateAPIView):
     def add_comment_to_project(request, project_id):
         if request.method == 'POST':
             project = Project.objects.get(pk=project_id)
-            user_profile = request.user.userprofile
+            user_profiles = request.user.userprofile
             comment_body = request.POST.get('comment_body')
             comment = Comment.objects.create(
-                project=project, user_profile=user_profile, comment_body=comment_body)
-            return Response({'comment_id': comment.id})
+                project=project, user_profile=user_profiles, comment_body=comment_body)
+            return Response({'comment_id': comment.id, 'user_profiles': user_profiles})
         else:
             return Response({'error': 'POST request required'}, status=400)
+
+
+class CommentsListView(generics.ListAPIView):
+    model = Comment
+    serializer_class = CommentSerializer
+    template_name = 'comments_list.html'
+    context_object_name = 'comments'
+
+    def get_queryset(self):
+        project_id = self.kwargs.get('project_id')
+        return Comment.objects.filter(projects__id=project_id).select_related('user_profiles').order_by('-created_at')
 
 
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
