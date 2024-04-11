@@ -18,46 +18,33 @@ class Home(APIView):
         return Response(content)
 
 
-# class AddCommentToProject(generics.CreateAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     queryset = Comment.objects.all()
-#     serializer_class = CommentSerializer
+class ProjectTypeList(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    def get_queryset(self):
+        project_type=self.kwargs['project_type']
 
-#     def post(self, request, *args, **kwargs):
-#         project_id = self.kwargs.get('project_id')
-#         try:
-#             project_id = Project.objects.get(pk=project_id)
-#         except Project.DoesNotExist:
-#             raise NotFound('Project not found')
+        
+        return Project.objects.filter(project_type=project_type)
 
-#         user_profiles = request.user.userprofile
-#         comment_body = request.data.get('comment_body')
+class ProjectByProfile(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    def get_queryset(self):
+        user_profile_id=self.kwargs['user_profile_id']
 
-#         if not comment_body:
-#             return Response({'error': 'Comment body is required'}, status=400)
+        
+        return Project.objects.filter(user_profile_id=user_profile_id)
 
-#         comment = Comment.objects.create(
-#             project_id=project_id, user_profiles=user_profiles, comment_body=comment_body
-#         )
-#         return Response({'comment_id': comment.id, 'user_profiles': user_profiles})
-
-
-# class AddCommentToProject(generics.ListCreateAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     queryset = Comment.objects.all()
-#     serializer_class = CommentSerializer
-
-#     def add_comment_to_project(request, project_id):
-#         if request.method == 'POST':
-#             project = Project.objects.get(pk=project_id)
-#             user_profiles = request.user.userprofile.username
-#             comment_body = request.POST.get('comment_body')
-#             comment = Comment.objects.create(
-#                 project=project, user_profile=user_profiles, comment_body=comment_body)
-#             return Response({'comment_id': comment.id, 'user_profiles': user_profiles})
-#         else:
-#             return Response({'error': 'POST request required'}, status=400)
-
+        
 
 class AddCommentToProject(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
