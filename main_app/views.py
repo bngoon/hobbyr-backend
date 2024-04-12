@@ -25,11 +25,12 @@ class ProjectTypeList(generics.ListCreateAPIView):
     permission_classes = [
         permissions.IsAuthenticated
     ]
-    def get_queryset(self):
-        project_type=self.kwargs['project_type']
 
-        
+    def get_queryset(self):
+        project_type = self.kwargs['project_type']
+
         return Project.objects.filter(project_type=project_type)
+
 
 class ProjectByProfile(generics.ListCreateAPIView):
     queryset = Project.objects.all()
@@ -38,13 +39,23 @@ class ProjectByProfile(generics.ListCreateAPIView):
     permission_classes = [
         permissions.IsAuthenticated
     ]
-    def get_queryset(self):
-        user_profile_id=self.kwargs['user_profile_id']
 
-        
+    def get_queryset(self):
+        user_profile_id = self.kwargs['user_profile_id']
+
         return Project.objects.filter(user_profile_id=user_profile_id)
 
-        
+
+class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserProfileSerializer
+    lookup_field = 'id'
+    queryset = UserProfile.objects.all()
+
+    def get_queryset(self):
+        id = self.kwargs['id']
+
+        return UserProfile.objects.filter(id=id)
+
 
 class AddCommentToProject(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -198,12 +209,6 @@ class UserProfileList(generics.ListCreateAPIView):
 
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-
-
-class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = UserProfileSerializer
-    lookup_field = 'id'
-    queryset = UserProfile.objects.all()
 
 
 class ProjectList(generics.ListCreateAPIView):
