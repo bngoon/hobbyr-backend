@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+import environ
+import dj_database_url
+import django_heroku
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +28,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f_42$mma#k#^%r2!6!e65ohp_@17fg^(c=^m5t=zm54b$azqo4'
+
+DATABASE_URL = env('DATABASE_URL')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# SECRET_KEY = 'django-insecure-f_42$mma#k#^%r2!6!e65ohp_@17fg^(c=^m5t=zm54b$azqo4'
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Adjust the port if your frontend runs on a different one
@@ -60,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'hobbyr_backend.urls'
@@ -86,10 +97,18 @@ WSGI_APPLICATION = 'hobbyr_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': dj_database_url.config()
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'hobbyr_backend',
+        # 'HOST': 'localhost',  <-- (optional) some computers might need this line
+        # 'USER': 'cat_admin', <-- (optional) postgres user name, if you have to sign into an account to open psql, you will want to add that user name here.
+        # 'PASSWORD': 'password', <-- (optional) postgres user password, if you have to sign into an account to open psql, you will want to add that user password here.
+        # 'PORT': 3000 <-- if you desire to use a port other than 8000, you can change that here to any valid port id, some number between 1 and 65535 that isn't in use by some other process on your machine. The reason for this port number range is because of how TCP/IP works, a TCP/IP protocol network(the most widely used protocol used on the web) allocated 16 bits for port numbers. This means that number must be greater than 0 and less than 2^15 -1.
     }
 }
 
@@ -157,3 +176,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# django_heroku.settings(locals())
