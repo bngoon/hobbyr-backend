@@ -15,6 +15,7 @@ dj-database-url = "*"
 django-heroku = "*"
 whitenoise = "*"
 gunicorn = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
