@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .serializers import UserSerializer, UserProfileSerializer, ProjectSerializer, CommentSerializer, FollowSerializer, FavoriteSerializer
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.views import APIView
@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import UserProfile, Project, Comment, Favorite, Follow
 from rest_framework.parsers import MultiPartParser, FormParser
+
 
 
 class Home(APIView):
@@ -266,13 +267,35 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 #         return Response({'message': f'Comment has been removed from Project {project.project_title}'})
 
 # Followers views
-class FollowerList(generics.ListCreateAPIView):
+# class FollowsList(generics.ListAPIView):
+#     queryset = Follow.objects.all()
+#     serializer_class = FollowSerializer
+#     permission_classes = [
+#         permissions.IsAuthenticated
+#     ]
+class FollowsList(generics.GenericAPIView):
+    serializer_class = FollowSerializer  # Ensure this serializer can serialize a UserProfile
+    permission_classes = [permissions.IsAuthenticated]
 
-    queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
+    def get(self, request, userprofile_id, *args, **kwargs):
+        user_profile = get_object_or_404(UserProfile, pk=userprofile_id)  # Adjust this according to how UserProfile is linked to User
+
+        # Get the profiles that follow the user
+        followers_query = Follow.objects.filter(following=user_profile)
+        followers = [follow.followers for follow in followers_query]
+
+        # Get the profiles that the user is following
+        following_query = Follow.objects.filter(followers=user_profile)
+        following = [follow.following for follow in following_query]
+
+        # Serialize the data
+        profile_serializer = UserProfileSerializer(followers, many=True)
+        following_serializer = UserProfileSerializer(following, many=True)
+
+        return Response({
+            'followers': profile_serializer.data,
+            'following': following_serializer.data
+        })
 
 # Follow User
 
