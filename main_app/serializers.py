@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    project_img = serializers.ImageField(required=False)
+    # project_img = serializers.ImageField(required=False)
 
     class Meta:
         model = Project
