@@ -13,8 +13,10 @@ djangorestframework-simplejwt = "*"
 django-environ = "*"
 dj-database-url = "*"
 django-heroku = "*"
+
 whitenoise = "*"
 gunicorn = "*"
+
 
 [dev-packages]
 

@@ -1,7 +1,9 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import Home, ProjectTypeList, ProjectByProfile, CommentsListView, FollowerList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView
+
+from .views import Home, ProjectTypeList, CommentsListView, ProjectByProfile, FollowsList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView
+
 
 
 favorite_router = routers.DefaultRouter()
@@ -41,7 +43,7 @@ urlpatterns = [
 
 
 
-    path('followers/', FollowerList.as_view(), name='followers'),
+    path('follows/<int:userprofile_id>/', FollowsList.as_view(), name='followers'),
     path('followers/<int:userprofile_id>/',
          FollowersView.as_view(), name='followers'),
     # followers paths
