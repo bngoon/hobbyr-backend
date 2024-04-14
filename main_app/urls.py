@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import Home, ProjectTypeList, CommentsListView, ProjectByProfile, FollowerList, FollowsList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView
+from .views import Home, ProjectTypeList, CommentsListView, ProjectByProfile, FollowsList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView
 
 favorite_router = routers.DefaultRouter()
 favorite_router.register(r'favorite', FavoriteViewSet)
