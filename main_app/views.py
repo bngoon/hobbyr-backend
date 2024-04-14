@@ -370,5 +370,7 @@ class ProjectsByFollowedUsers(generics.ListAPIView):
         followed_users = Follow.objects.filter(
             followers=user_profile).values_list('following__id', flat=True)
 
+        print(followed_users)
+
         # Filter projects where the project's user profile is in the list of followed users
         return Project.objects.filter(user_profile_id__in=followed_users)
