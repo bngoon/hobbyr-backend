@@ -1,61 +1,174 @@
-## Model Architecture
+# hobbyr API
 
-### Overview
+<img src="https://raw.githubusercontent.com/erichowington/hobbyr/2612f880161a230048148715e7771318178134cc/public/images/hobbyr-logos/hobbyr-api.png" width="500" height="auto">
 
-Our Django backend uses a series of models to manage user profiles, projects, and interactions such as following, favorites, and comments. This section provides a breakdown of each model and its role within the application.
+hobbyr API is a restful interface that is based on the principles of REST, which emphasize a stateless client-server interaction where resources are uniquely identified by URIs.
+hobbyr is an app where users can share and interact with one another through project based posts.
 
-### Models
+## Installation
 
-1. **UserProfile**
+Download the API by forking and cloning this repository.
 
-   - **Description**: Represents a user profile in our system.
-   - **Fields**:
-     - `user`: A one-to-one link to Django’s built-in User model.
-     - `username`: The user's chosen username.
-     - `profile_pic`: A URL to the user’s profile picture.
-     - `bio`: A short text describing the user.
+```bash
+~ git clone (github url)
+~ cd into directory
+```
 
-2. **Project**
+This API requires psql to interact with the database.
+Enter your virtual enviorment.
 
-   - **Description**: Represents a project created by a user.
-   - **Fields**:
-     - `user_profile`: A link to the UserProfile of the user who owns the project.
-     - `project_title`: The title of the project.
-     - `project_type`: The type of project (e.g., Tech, Carpentry, etc.), with predefined choices.
-     - `project_img`: An image of the project, stored in a specified directory.
-     - `body`: Detailed description of the project.
-     - `link`: Optional link to additional project resources.
-     - `created_at`: Timestamp for when the project was created.
-     - `updated_at`: Timestamp for the last update to the project.
+```bash
+~ pipenv shell
+```
 
-3. **Follow**
+and install all dependencies located in the pipfile.
 
-   - **Description**: Tracks the following relationships between users.
-   - **Fields**:
-     - `following`: The user who is being followed.
-     - `followers`: The user who follows.
+```bash
+(hobbyr-backend) ~ pipenv install
+```
 
-4. **Favorite**
+A sql file that renders the databse has already been made. Run the following line command to drop the database.
 
-   - **Description**: Represents the projects that a user has marked as favorite.
-   - **Fields**:
-     - `projects`: The project that has been favorited.
-     - `user_profile`: The user profile that favorited the project.
+```bash
+(hobbyr-backend)~ psql -f create-db.sql
+```
 
-5. **Comment**
-   - **Description**: Represents comments made on projects.
-   - **Fields**:
-     - `projects`: The project on which the comment is made.
-     - `user_profiles`: The user profile of the commenter.
-     - `comment_body`: The text of the comment.
-     - `created_at`: Timestamp for when the comment was created.
-     - `updated_at`: Timestamp for the last update to the comment.
+Edit the settings.py file to include the database configuration for psql and update information so that it matches yours.
 
-### Relationships
+```bash
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'name',
+        'USER': 'user',
+        'PASSWORD': 'password'
+    }
+}
+```
 
-- **UserProfiles** and **Projects** are linked, allowing for a clear view of who created each project.
-- **Follow**, **Favorite**, and **Comment** models facilitate interaction between users and content, enhancing the community aspect of the platform.
+Because this is made with django, their is a built in admin panel, to set it up all you do is:
 
-### Diagram
+```bash
+(hobbyr-backend)~ python manage.py createsuperuser
+```
 
-![Entity-Relationship Diagram](images/image-1.png)
+And then,
+run server.
+
+```bash
+(hobbyr-backend)~ python manage.py runserver
+```
+
+## ERD
+
+<img src="https://raw.githubusercontent.com/erichowington/hobbyr/2612f880161a230048148715e7771318178134cc/public/images/information-systems/HOBBYR%20ERD%20(1).png" width="900" height="auto">
+
+## API Reference
+
+#### Register to get token
+
+```http
+  POST https://hobbyr-db-fe2543498be7.herokuapp.com/users/register/
+```
+
+body required
+
+```bash
+{
+    "username" : "username",
+    "email" : "email" ,
+    "password" : "password"
+}
+```
+
+copy "access" token and added it to Headers in **Postman**
+| Key | Value | Description |
+| :-------- | :------- | :-------------------------------- |
+| Authorization | Bearer "acces token" | **Required**. |
+
+### Routes
+
+**GET** all Projects
+
+```http
+GET https://hobbyr-db-fe2543498be7.herokuapp.com/projects/
+```
+
+**GET** one project.
+
+```http
+GET https://hobbyr-db-fe2543498be7.herokuapp.com/projects/PROJECT ID
+```
+
+**CREATE** a new project
+
+```http
+POST https://hobbyr-db-fe2543498be7.herokuapp.com/projects/
+```
+
+**BODY REQUIRED**
+
+```bash
+{
+    "project_title": "HOBBY",
+    "project_type": "A",
+    "project_img": "STRING TO IMAGE ADDRESS",
+    "body": "I MADE THIS PROJECT. ITS MY HOBBY",
+    "link": " ADDITIONAL LINK TO MAYBE YOUR STORE OR YOUTUBE CHANEL"
+}
+```
+
+**UPDATE** your project.
+
+```http
+PUT https://hobbyr-db-fe2543498be7.herokuapp.com/projects/ PROJECT ID
+```
+
+Value you wish to update. Body required.
+
+```bash
+{
+    "body": "I MADE THIS PROJECT. ITS MY PASSION",
+}
+```
+
+and finally, **DELETE** Your project.
+
+```http
+DELETE https://hobbyr-db-fe2543498be7.herokuapp.com/projects/ PROJECT ID
+```
+
+## Features
+
+- JWT Token encryption
+- Virtual admin panel
+- RESTful framework
+- Full CRUD routes
+
+## Tech Stack
+
+**DATABASE:**
+
+- Django
+  **Language:**
+- Python
+  **RDBMS**
+- PostgreSQL
+  **ADDTIONAL DEPENDENCIES**
+- psycopg2-binary
+- djangorestframework
+- django-cors-headers
+- djangorestframework-simplejwt
+- django-environ
+- dj-database-url
+- django-heroku
+- whitenoise
+- gunicorn
+
+## Authors
+
+- [@Alex Chkhikvishvili](https://www.github.com/AleksandreChkhikvishvili)
+- [@Booker Ngoon](https://www.github.com/bngoon)
+- [@Shatlyk](https://www.github.com/Shatlykch)
+- [@Kevin Butler](https://www.github.com/kevinjbutler1994)
+- [@Eric](https://www.github.com/erichowington)
