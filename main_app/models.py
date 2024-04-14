@@ -48,6 +48,9 @@ class Follow(models.Model):
     followers = models.ForeignKey(
         UserProfile, related_name='following', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.following.username) + ' is following ' + str(self.followers.username)
+
 
 class Favorite(models.Model):
     projects = models.ForeignKey(
