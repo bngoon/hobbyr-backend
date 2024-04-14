@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import Home, ProjectTypeList, CommentsListView, ProjectByProfile, FollowsList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView
+from .views import Home, ProjectTypeList, CommentsListView, ProjectByProfile, FollowsList, CreateUserView, LoginView, VerifyUserView, ProjectList, ProjectDetail, UserProfileList, UserProfileDetail, CommentList, AddCommentToProject, CommentDetails, FavoriteViewSet, FollowUser, UnfollowUser, FollowersView, ProjectsByFollowedUsers
 
 favorite_router = routers.DefaultRouter()
 favorite_router.register(r'favorite', FavoriteViewSet)
@@ -57,6 +57,10 @@ urlpatterns = [
     path('projects/user-profile/<int:user_profile_id>/',
          ProjectByProfile.as_view(), name='projects-by-user-profile'),
 
+    path('projects/followed/', ProjectsByFollowedUsers.as_view(),
+         name='projects-by-followed-users'),
+
+
     # Favorites
     path('', include(favorite_router.urls)),
 
@@ -64,6 +68,4 @@ urlpatterns = [
     #          AddProjectToFavorite.as_view(), name='add-favorite'),
     #     path('projects/<int:project_id>/remove_favorites/<int:favorite_id>/',
     #          RemoveProjectFromFavorite.as_view(), name='remove-favorite'),
-
-
 ]

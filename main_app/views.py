@@ -12,7 +12,6 @@ from .models import UserProfile, Project, Comment, Favorite, Follow
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
 
-
 class Home(APIView):
     def get(self, request):
         content = {'message': 'Welcome to the hobbyr home route!'}
@@ -279,11 +278,13 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 #         permissions.IsAuthenticated
 #     ]
 class FollowsList(generics.GenericAPIView):
-    serializer_class = FollowSerializer  # Ensure this serializer can serialize a UserProfile
+    # Ensure this serializer can serialize a UserProfile
+    serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, userprofile_id, *args, **kwargs):
-        user_profile = get_object_or_404(UserProfile, pk=userprofile_id)  # Adjust this according to how UserProfile is linked to User
+        # Adjust this according to how UserProfile is linked to User
+        user_profile = get_object_or_404(UserProfile, pk=userprofile_id)
 
         # Get the profiles that follow the user
         followers_query = Follow.objects.filter(following=user_profile)
@@ -355,3 +356,19 @@ class FollowersView(APIView):
             return Response(serializer.data)
         except UserProfile.DoesNotExist:
             return Response({"error": "User profile does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ProjectsByFollowedUsers(generics.ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the current user's profile (adjust according to your user profile link setup)
+        user_profile = self.request.user.userprofile
+
+        # Find all users followed by the current user
+        followed_users = Follow.objects.filter(
+            followers=user_profile).values_list('following__id', flat=True)
+
+        # Filter projects where the project's user profile is in the list of followed users
+        return Project.objects.filter(user_profile_id__in=followed_users)
