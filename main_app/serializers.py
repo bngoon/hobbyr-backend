@@ -39,7 +39,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'profile_pic', 'bio']
+        fields = ['username', 'profile_pic', 'bio', 'id']
 
 
 class CommentSerializer(serializers.ModelSerializer):
