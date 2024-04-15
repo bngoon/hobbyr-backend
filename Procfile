@@ -4,4 +4,4 @@ release: python3 manage.py migrate
 
 # gunicorn will allow us to deploy to heroku 
 # It will act as a middleman between our application and the internet.
-web: gunicorn catcollector.wsgi 
+web: gunicorn hobbyr_backend.wsgi 

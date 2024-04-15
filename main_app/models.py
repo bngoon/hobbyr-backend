@@ -14,7 +14,7 @@ CHOICES = (
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=50)
-    profile_pic = models.CharField(max_length=1000, null=True, blank=True)
+    profile_pic = models.CharField(max_length=3000, null=True, blank=True)
     bio = models.TextField(max_length=250)
 
     def __str__(self):
@@ -30,9 +30,10 @@ class Project(models.Model):
     project_title = models.CharField(max_length=250)
     project_type = models.CharField(
         choices=CHOICES, default=CHOICES[0][0], max_length=1)
-    project_img = models.ImageField(
-        upload_to=upload_to, null=True, blank=True)
-    body = models.TextField(max_length=1000)
+    # project_img = models.ImageField(
+    #     upload_to=upload_to, null=True, blank=True)
+    project_img = models.CharField(max_length=250)
+    body = models.TextField(max_length=2000)
     link = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

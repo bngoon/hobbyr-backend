@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    project_img = serializers.ImageField(required=False)
+    # project_img = serializers.ImageField(required=False)
 
     class Meta:
         model = Project
@@ -39,7 +39,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'username']
+        fields = ['username', 'profile_pic', 'bio', 'id']
 
 
 class CommentSerializer(serializers.ModelSerializer):

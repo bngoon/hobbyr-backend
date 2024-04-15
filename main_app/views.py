@@ -9,8 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import UserProfile, Project, Comment, Favorite, Follow
-from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
 
 class Home(APIView):
@@ -26,11 +25,12 @@ class ProjectTypeList(generics.ListCreateAPIView):
     permission_classes = [
         permissions.IsAuthenticated
     ]
-    def get_queryset(self):
-        project_type=self.kwargs['project_type']
 
-        
+    def get_queryset(self):
+        project_type = self.kwargs['project_type']
+
         return Project.objects.filter(project_type=project_type)
+
 
 class ProjectByProfile(generics.ListCreateAPIView):
     queryset = Project.objects.all()
@@ -39,13 +39,23 @@ class ProjectByProfile(generics.ListCreateAPIView):
     permission_classes = [
         permissions.IsAuthenticated
     ]
-    def get_queryset(self):
-        user_profile_id=self.kwargs['user_profile_id']
 
-        
+    def get_queryset(self):
+        user_profile_id = self.kwargs['user_profile_id']
+
         return Project.objects.filter(user_profile_id=user_profile_id)
 
-        
+
+class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserProfileSerializer
+    lookup_field = 'id'
+    queryset = UserProfile.objects.all()
+
+    def get_queryset(self):
+        id = self.kwargs['id']
+
+        return UserProfile.objects.filter(id=id)
+
 
 class AddCommentToProject(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -201,16 +211,10 @@ class UserProfileList(generics.ListCreateAPIView):
     serializer_class = UserProfileSerializer
 
 
-class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = UserProfileSerializer
-    lookup_field = 'id'
-    queryset = UserProfile.objects.all()
-
-
 class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
     permission_classes = [
         permissions.IsAuthenticated
     ]
@@ -274,11 +278,13 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 #         permissions.IsAuthenticated
 #     ]
 class FollowsList(generics.GenericAPIView):
-    serializer_class = FollowSerializer  # Ensure this serializer can serialize a UserProfile
+    # Ensure this serializer can serialize a UserProfile
+    serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, userprofile_id, *args, **kwargs):
-        user_profile = get_object_or_404(UserProfile, pk=userprofile_id)  # Adjust this according to how UserProfile is linked to User
+        # Adjust this according to how UserProfile is linked to User
+        user_profile = get_object_or_404(UserProfile, pk=userprofile_id)
 
         # Get the profiles that follow the user
         followers_query = Follow.objects.filter(following=user_profile)
@@ -350,3 +356,21 @@ class FollowersView(APIView):
             return Response(serializer.data)
         except UserProfile.DoesNotExist:
             return Response({"error": "User profile does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ProjectsByFollowedUsers(generics.ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the current user's profile (adjust according to your user profile link setup)
+        user_profile = self.request.user.userprofile
+
+        # Find all users followed by the current user
+        followed_users = Follow.objects.filter(
+            followers=user_profile).values_list('following__id', flat=True)
+
+        print(followed_users)
+
+        # Filter projects where the project's user profile is in the list of followed users
+        return Project.objects.filter(user_profile_id__in=followed_users)
